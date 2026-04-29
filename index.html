@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" type="image/png" href="favicon.png">
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=4">
 </head>
 
 <body class="glass-theme">
@@ -117,6 +117,12 @@
                     <span>ค้นหาห้องตรวจ</span>
                 </button>
             </div>
+            
+            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                <button type="button" class="btn-flow-tb" onclick="openFlowTBModal(event)" style="box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2); font-size: 14px; padding: 10px 20px;">
+                    <i class="fa-solid fa-lungs-virus"></i> เปิดดู Flow TB (แนวทางผู้ป่วยสงสัยวัณโรค)
+                </button>
+            </div>
         </section>
 
         <!-- Results -->
@@ -133,6 +139,131 @@
                 </div>
             </div>
         </section>
+
+    <!-- Flow TB Modal -->
+    <div class="flow-tb-modal" id="flowTBModal">
+        <div class="flow-tb-content">
+            <div class="flow-tb-header">
+                <h2><i class="fa-solid fa-lungs-virus"></i> แนวทางปฏิบัติการดูแลผู้ป่วยสงสัยวัณโรค</h2>
+                <button class="close-modal-btn" onclick="closeFlowTBModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flow-tb-body">
+                <div class="fc-container">
+                    <div class="fc-node primary">
+                        ผู้ป่วยสงสัยวัณโรค
+                    </div>
+                    <div class="fc-connector"></div>
+                    
+                    <div class="fc-split">
+                        <!-- OPD Staff Path -->
+                        <div class="fc-branch">
+                            <div class="fc-node action" style="border-color: #3b82f6; background: #eff6ff;">
+                                <h4 style="color: #1d4ed8; text-align: center;">เจ้าหน้าที่ OPD</h4>
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node action">
+                                <h4>แบบคัดกรองการติดเชื้อวัณโรค คะแนน ≥ 3</h4>
+                                <ul>
+                                    <li>ให้ผู้ป่วยสวม Surgical Mask (ห้ามใช้ Cloth Mask)</li>
+                                    <li>บุคลากรสวม N95 Mask</li>
+                                    <li>แนะนำวิธีการปฏิบัติตัวขณะรอตรวจ</li>
+                                    <li><strong>เจ้าหน้าที่ OPD โทรประสาน EID (38589)</strong> เพื่อส่งต่อ</li>
+                                </ul>
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node destination">
+                                ส่งต่อ OPD EID (38589)
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node action">
+                                <h4>กระบวนการที่ EID</h4>
+                                <ul>
+                                    <li><strong>1. ประเมินสัญญาณชีพแรกรับ</strong>
+                                        <ul style="margin-top:4px; margin-bottom:4px;">
+                                            <li>- <span style="color:#047857;">ปกติ/คงที่:</span> ส่งไป CXR ที่ EID-TB และกลับมารอผลที่ EID</li>
+                                            <li>- <span style="color:#b91c1c;">ผิดปกติ/ไม่คงที่:</span> ประสาน ER ส่งไปห้อง Negative Pressure</li>
+                                        </ul>
+                                    </li>
+                                    <li><strong>2. ประสานพยาบาล EID-TB</strong> แจ้งชื่อ นามสกุล HN</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Other Clinics Path -->
+                        <div class="fc-branch">
+                            <div class="fc-node action" style="border-color: #8b5cf6; background: #f5f3ff;">
+                                <h4 style="color: #6d28d9; text-align: center;">แพทย์ห้องตรวจอื่น</h4>
+                            </div>
+                            
+                            <div class="cross-arrow-container">
+                                <div class="fc-connector"></div>
+                                <div class="cross-arrow"></div>
+                            </div>
+                            
+                            <div class="fc-node action">
+                                <h4>ผู้ป่วยสงสัยจากอาการ / ยังไม่ได้ CXR</h4>
+                                <ul style="list-style: none; padding:0; text-align:center;">
+                                    <li><i class="fa-solid fa-arrow-left"></i> เข้าสู่กระบวนการของ <strong>เจ้าหน้าที่ OPD</strong></li>
+                                </ul>
+                            </div>
+
+                            <div class="mobile-text-path">
+                                <div class="fc-connector"></div>
+                                <div class="fc-node action">
+                                    <h4>ส่งเสมหะแล้วพบเชื้อ / CXR ผิดปกติ</h4>
+                                    <ul style="list-style: none; padding:0; text-align:center;">
+                                        <li><i class="fa-solid fa-arrow-down"></i> ดูที่ <strong>แพทย์อายุรกรรม</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Med Dept Path -->
+                        <div class="fc-branch">
+                            <div class="fc-node action" style="border-color: #10b981; background: #ecfdf5;">
+                                <h4 style="color: #047857; text-align: center;">แพทย์ห้องอายุรกรรม</h4>
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node action">
+                                <h4>ส่งเสมหะแล้วพบเชื้อ / CXR ผิดปกติ</h4>
+                                <ul>
+                                    <li>ให้ผู้ป่วยสวม Surgical Mask</li>
+                                    <li>บุคลากรสวม N95 Mask</li>
+                                    <li>แนะนำวิธีการปฏิบัติตัวขณะรอตรวจ</li>
+                                    <li><strong>โทรประสาน EID-TB (38723)</strong> เพื่อส่งต่อ</li>
+                                </ul>
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node destination">
+                                ส่งต่อ EID-TB (38723)
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-node action">
+                                <h4>กระบวนการที่ EID - TB</h4>
+                                <ul>
+                                    <li>แจ้งแพทย์ขออ่านผล CXR</li>
+                                    <li>พยาบาลแจ้งผล X-ray แก่ผู้ป่วย</li>
+                                </ul>
+                            </div>
+                            <div class="fc-connector"></div>
+                            <div class="fc-split" style="gap: 12px;">
+                                <div class="fc-branch">
+                                    <div class="fc-node terminal" style="padding: 12px 8px; font-size: 13px; border-color:#fca5a5; background:#fef2f2; color:#b91c1c;">
+                                        <strong>ผล Positive</strong><br>ส่งพบแพทย์ที่<br>EID Complex<br><strong>TB Clinic</strong>
+                                    </div>
+                                </div>
+                                <div class="fc-branch">
+                                    <div class="fc-node terminal" style="padding: 12px 8px; font-size: 13px; border-color:#93c5fd; background:#eff6ff; color:#1d4ed8;">
+                                        <strong>ผล Negative</strong><br>ส่งพบแพทย์ที่<br>EID Complex<br><strong>URI Clinic</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     </main>
 
     <script>
@@ -1697,79 +1828,79 @@
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "ไข้ ร่วมกับไอ \/ เจ็บคอ \/ น้ำมูก \/ เสมหะ"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "ไข้ออกผื่น"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "อีสุกอีใส"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "งูสวัด ( ในระยะแพร่กระจายเชื้อ )"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "Covid-19"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "ไข้หวัดใหญ่"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "RSV"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID Clinic",
+            "clinic": "EID",
             "diagnosis": "หิด"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID - TB Clinic",
+            "clinic": "EID - TB",
             "diagnosis": "ผู้ป่วยวัณโรคปอด"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID - TB Clinic",
+            "clinic": "EID - TB",
             "diagnosis": "ไอเรื้อรัง > 2 สัปดาห์"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID - TB Clinic",
+            "clinic": "EID - TB",
             "diagnosis": "เสมหะปนเลือด"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID - TB Clinic",
+            "clinic": "EID - TB",
             "diagnosis": "คัดกรองวัณโรคปอด"
         },
         {
             "opd": "EID",
             "day_week": "",
-            "clinic": "EID - TB Clinic",
+            "clinic": "EID - TB",
             "diagnosis": "FLOW R\/O TB"
         },
         {
@@ -4683,11 +4814,19 @@
                     const ageDisplay = item.age_group || '';
                     const dayDisplay = dayTH[item.day_week] || item.day_week || '';
 
+                    let showTBButton = false;
+                    if (diag && (diag.includes('วัณโรค') || diag.includes('TB') || diag.includes('ไอเรื้อรัง') || diag.includes('เสมหะปนเลือด'))) {
+                        showTBButton = true;
+                    }
+
                     let warnHtml = '';
                     if (item.warnings && item.warnings.length) {
                         item.warnings.forEach(w => {
                             if (!w) return;
                             let t = w.replace(/(consult|Consult|CONSULT)/gi, '<strong class="consult-hl">$1</strong>');
+                            if (t.includes('Activate TB Flow')) {
+                                t = t.replace(/Activate TB Flow/gi, 'Activate TB Flow <br><button type="button" class="btn-flow-tb" onclick="openFlowTBModal(event)"><i class="fa-solid fa-lungs-virus"></i> เปิด Flow TB</button>');
+                            }
                             warnHtml += `<div class="warning-box"><i class="fa-solid fa-triangle-exclamation"></i><div class="warning-text">${t}</div></div>`;
                         });
                     }
@@ -4721,11 +4860,30 @@
                             </div>
                             ${remarkHtml}
                             ${warnHtml}
+                            ${showTBButton ? `<div style="margin-top:10px;"><button type="button" class="btn-flow-tb" onclick="openFlowTBModal(event)"><i class="fa-solid fa-lungs-virus"></i> เปิด Flow TB</button></div>` : ''}
                         </div>
                     </div>`;
                 });
                 container.html(html);
             }
+        });
+
+        // Flow TB Modal Logic
+        function openFlowTBModal(e) {
+            if(e) e.stopPropagation();
+            $('#flowTBModal').addClass('show');
+            $('body').css('overflow', 'hidden');
+        }
+
+        function closeFlowTBModal() {
+            $('#flowTBModal').removeClass('show');
+            $('body').css('overflow', '');
+        }
+
+        $(document).ready(function() {
+            $('#flowTBModal').click(function(e) {
+                if (e.target === this) closeFlowTBModal();
+            });
         });
     </script>
 </body>
