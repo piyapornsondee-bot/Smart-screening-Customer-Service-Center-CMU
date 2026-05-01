@@ -269,7 +269,7 @@
     <script>
         $(function () {
             // Standalone Data
-            const appData = {
+            const appData = window.appData = {
     "conditions": [
         {
             "opd": "1",
@@ -2022,6 +2022,84 @@
             "day_week": "",
             "clinic": "Pain clinic",
             "diagnosis": "Consult Pain"
+        },
+        {
+            "opd": "23",
+            "day_week": "",
+            "clinic": "GI.Med",
+            "diagnosis": "นิ่วในถุงน้ำดี"
+        },
+        {
+            "opd": "23",
+            "day_week": "",
+            "clinic": "GI.Med",
+            "diagnosis": "HCC"
+        },
+        {
+            "opd": "23",
+            "day_week": "",
+            "clinic": "GI.Med",
+            "diagnosis": "Liver mass"
+        },
+        {
+            "opd": "23",
+            "day_week": "",
+            "clinic": "GI.Med",
+            "diagnosis": "ERCP"
+        },
+        {
+            "opd": "23",
+            "day_week": "",
+            "clinic": "GI.Med",
+            "diagnosis": "MRCP"
+        },
+        {
+            "opd": "9",
+            "day_week": "",
+            "clinic": "GI",
+            "diagnosis": "นิ่วในถุงน้ำดี"
+        },
+        {
+            "opd": "9",
+            "day_week": "",
+            "clinic": "GI",
+            "diagnosis": "HCC"
+        },
+        {
+            "opd": "9",
+            "day_week": "",
+            "clinic": "GI",
+            "diagnosis": "Liver mass"
+        },
+        {
+            "opd": "9",
+            "day_week": "",
+            "clinic": "GI",
+            "diagnosis": "ERCP"
+        },
+        {
+            "opd": "9",
+            "day_week": "",
+            "clinic": "GI",
+            "diagnosis": "MRCP"
+        },
+        {
+            "opd": "101",
+            "day_week": "",
+            "clinic": "Sx.HBP",
+            "diagnosis": "นิ่วในถุงน้ำดี"
+        },
+        {
+            "opd": "101",
+            "day_week": "",
+            "clinic": "Sx.HBP",
+            "diagnosis": "HCC"
+        },
+        {
+            "opd": "101",
+            "day_week": "",
+            "clinic": "Sx.HBP",
+            "diagnosis": "Liver mass"
         }
     ],
     "schedule": [
@@ -4194,7 +4272,12 @@
             "เปิดให้บริการ\n08.00 - 12.00 น."
         ],
         "GI": [
-            "เปิดให้บริการ\n08.00 - 12.00 น.\nRefer for ERCP \/ MRCP \/ EUS\nสามารถส่ง OPD23 วันจันทร์ได้\nบางหัตถการต้องส่ง\nOPD101 HBP วันอังคาร\nนิ่วในถุงน้ำดี \/ HCC \/\nLiver mass"
+            "เปิดให้บริการ\n08.00 - 12.00 น.\nRefer for ERCP \/ MRCP \/ EUS\nสามารถส่ง OPD23 วันจันทร์ได้\nบางหัตถการต้องส่ง\nOPD101 HBP วันอังคาร\nนิ่วในถุงน้ำดี \/ HCC \/\nLiver mass",
+            "Liver Biopsy\nยังไม่มีข้อสรุปแน่ชัดว่าเป็นของ Med \/ Sx.\n* โทร Consult เป็นรายกรณี *\nOPD 9: 35740 \/ 35751\nOPD 23: 35754 \/ 36354\nOPD 101: 35728 \/ 35729"
+        ],
+        "GI.Med": [
+            "เปิดให้บริการ\n08.00 - 12.00 น.\nRefer for ERCP \/ MRCP \/ EUS\nสามารถส่ง OPD23 วันจันทร์ได้\nบางหัตถการต้องส่ง\nOPD101 HBP วันอังคาร\nนิ่วในถุงน้ำดี \/ HCC \/\nLiver mass",
+            "Liver Biopsy\nยังไม่มีข้อสรุปแน่ชัดว่าเป็นของ Med \/ Sx.\n* โทร Consult เป็นรายกรณี *\nOPD 9: 35740 \/ 35751\nOPD 23: 35754 \/ 36354\nOPD 101: 35728 \/ 35729"
         ],
         "Spine": [
             "บางกรณี C-Spine\nทาง Neuro Sx. รับเคส"
@@ -4840,7 +4923,7 @@
                     let ageBadge = ageDisplay ? `<div class="age-badge-tag">${(ageDisplay.includes('>=') || ageDisplay.includes('≥')) ? '≥15 ปี' : '<15 ปี'}</div>` : '';
 
                     html += `
-                    <div class="result-card" style="animation-delay:${i * 0.04}s">
+                    <div class="result-card" style="animation-delay:${i * 0.04}s; cursor: pointer;" onclick="openClinicDiagnosisModal('${item.clinic || ''}', '${item.opd}')" title="คลิกเพื่อดูรายละเอียดอาการที่รับตรวจ">
                         <div class="card-top">
                             <div class="opd-badge">OPD ${item.opd}</div>
                             <div class="clinic-name">${clinic}</div>
@@ -4884,8 +4967,59 @@
             $('#flowTBModal').click(function(e) {
                 if (e.target === this) closeFlowTBModal();
             });
+            $('#clinicDiagModal').click(function(e) {
+                if (e.target === this) closeClinicDiagnosisModal();
+            });
         });
+
+        // Clinic Diagnosis Modal Logic
+        function openClinicDiagnosisModal(clinicName, opd) {
+            if (!clinicName) return;
+            
+            const diagnoses = [];
+            appData.conditions.forEach(c => {
+                if (c.clinic === clinicName && c.opd === opd && c.diagnosis) {
+                    diagnoses.push(c.diagnosis);
+                }
+            });
+            
+            $('#diagModalTitle').text(clinicName);
+            
+            const listContainer = $('#diagModalList');
+            if (diagnoses.length > 0) {
+                let html = '';
+                [...new Set(diagnoses)].forEach(d => {
+                    html += `<li class="diag-item"><i class="fa-solid fa-check-circle"></i> <span>${d}</span></li>`;
+                });
+                listContainer.html(html);
+            } else {
+                listContainer.html(`<li class="diag-item" style="justify-content:center; color: #64748b; padding: 20px;">ไม่มีข้อมูลรายละเอียดเพิ่มเติม</li>`);
+            }
+            
+            $('#clinicDiagModal').addClass('show');
+            $('body').css('overflow', 'hidden');
+        }
+
+        function closeClinicDiagnosisModal() {
+            $('#clinicDiagModal').removeClass('show');
+            $('body').css('overflow', '');
+        }
     </script>
+
+    <!-- Clinic Diagnosis Modal -->
+    <div class="clinic-diag-modal" id="clinicDiagModal">
+        <div class="clinic-diag-content">
+            <div class="clinic-diag-header">
+                <h2><i class="fa-solid fa-notes-medical"></i> <span id="diagModalTitle">รายละเอียดคลินิก</span></h2>
+                <button class="close-modal-btn" onclick="closeClinicDiagnosisModal(event)"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="clinic-diag-body">
+                <ul class="diag-list" id="diagModalList">
+                    <!-- list will be injected here -->
+                </ul>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
