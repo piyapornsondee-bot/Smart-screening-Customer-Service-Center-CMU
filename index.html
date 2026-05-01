@@ -4855,10 +4855,32 @@
                     let results = Array.from(resultsMap.values());
                     
                     // Add warnings
-                    results = results.map(r => ({
-                        ...r,
-                        warnings: appData.warnings[r.clinic] || []
-                    }));
+                    results = results.map(r => {
+                        let w = appData.warnings[r.clinic] || [];
+                        if (r.age_group === '<15') {
+                            const adultClinics = ['ID', 'GI', 'Skin', 'Chest', 'Rheumato', 'Neuro', 'Endocine', 'Hemato', 'Nephro', 'Neuro.Med', 'GI.Med', 'Skin.Med', 'Cardio'];
+                            if (adultClinics.includes(r.clinic)) {
+                                w = [];
+                            } else {
+                                // Filter out TB and EID flow strings
+                                w = w.map(text => {
+                                    let lines = text.split('\n');
+                                    lines = lines.filter(l => !l.includes('Activate TB Flow') && !l.includes('OPD EID') && !l.includes('ไอเรื้อรัง') && !l.includes('URI'));
+                                    let result = lines.join('\n').trim();
+                                    return (result === 'ข้อควรระวัง' || result === '') ? null : result;
+                                }).filter(Boolean);
+                            }
+                        }
+                        if (r.clinic === 'Cardio') {
+                            if (r.time_slot && r.time_slot.includes('8.00')) {
+                                w = w.filter(text => text.includes('8.00'));
+                            } else if (r.time_slot && r.time_slot.includes('13.00')) {
+                                w = w.filter(text => text.includes('13.00'));
+                            }
+                        }
+
+                        return { ...r, warnings: w };
+                    });
 
                     // Sort
                     results.sort((a, b) => {
